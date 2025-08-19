@@ -1,0 +1,26 @@
+# Build results
+bin/
+obj/
+
+# Test results
+TestResults/
+
+# ExtentReports
+ExtentReports/
+
+# Screenshots
+Screenshots/
+
+# Visual Studio / Visual Studio Code
+.vs/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Playwright
+test-results/
+playwright-report/
