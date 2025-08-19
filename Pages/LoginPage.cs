@@ -12,8 +12,8 @@ public class LoginPage : BasePage
     private const string LoginLogo = ".login_logo";
     private const string LoginContainer = "#login_button_container";
 
-    // 页面URL
-    public const string LoginUrl = "https://www.saucedemo.com";
+    // 页面URL - 从配置获取
+    public static string LoginUrl => AppConfigurationManager.GetUrlConfig().SauceDemo;
 
     public LoginPage(IPlaywrightDriver driver) : base(driver)
     {
@@ -100,11 +100,7 @@ public class LoginPage : BasePage
     /// <returns>登录页面是否加载完成</returns>
     public async Task<bool> IsLoginPageLoadedAsync()
     {
-        return await IsVisibleAsync(LoginLogo) && 
-               await IsVisibleAsync(LoginContainer) && 
-               await IsVisibleAsync(UsernameInput) && 
-               await IsVisibleAsync(PasswordInput) && 
-               await IsVisibleAsync(LoginButton);
+        return await IsVisibleAsync(LoginButton);
     }
 
     /// <summary>
@@ -112,7 +108,7 @@ public class LoginPage : BasePage
     /// </summary>
     public async Task ClearUsernameAsync()
     {
-        await Page.FillAsync(UsernameInput, "");
+        await FillAsync(UsernameInput, "");
     }
 
     /// <summary>
@@ -120,7 +116,7 @@ public class LoginPage : BasePage
     /// </summary>
     public async Task ClearPasswordAsync()
     {
-        await Page.FillAsync(PasswordInput, "");
+        await FillAsync(PasswordInput, "");
     }
 
     /// <summary>

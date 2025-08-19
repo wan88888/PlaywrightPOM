@@ -92,7 +92,7 @@ _sparkReporter = new ExtentSparkReporter(reportPath);
         /// <param name="title">截图标题</param>
         public static void AddScreenshot(ExtentTest test, string screenshotPath, string title = "截图")
         {
-            if (File.Exists(screenshotPath))
+            if (!string.IsNullOrEmpty(screenshotPath) && File.Exists(screenshotPath))
             {
                 test.AddScreenCaptureFromPath(screenshotPath, title);
             }
@@ -145,7 +145,7 @@ _sparkReporter = new ExtentSparkReporter(reportPath);
         /// <returns>报告文件路径</returns>
         public static string GetReportPath()
         {
-            var reportsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
+            var reportsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExtentReports");
             return Path.Combine(reportsPath, $"TestReport_{DateTime.Now:yyyyMMdd_HHmmss}.html");
         }
         

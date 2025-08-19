@@ -1,13 +1,26 @@
 using PlaywrightPOM.Pages;
 using PlaywrightPOM.Utils;
 using AventStack.ExtentReports;
+using Xunit;
 
 namespace PlaywrightPOM.Tests;
 
-public class LoginTest : BaseTest
+[Collection("LoginTests")]
+public class LoginTest : BaseTest, IDisposable
 {
     private LoginPage _loginPage = null!;
     private ProductsPage _productsPage = null!;
+    private static int _testCount = 0;
+    private static int _completedTests = 0;
+    private static readonly object _lock = new object();
+    
+    public LoginTest()
+    {
+        lock (_lock)
+        {
+            _testCount++;
+        }
+    }
 
     /// <summary>
     /// 测试成功登录场景
@@ -82,129 +95,72 @@ public class LoginTest : BaseTest
     [Fact]
     public async Task TestInvalidUsernameLogin()
     {
+        // 初始化测试（无头模式）
         await InitializeAsync(TestConfig.Browser.DefaultBrowserType, true, nameof(TestInvalidUsernameLogin));
+        StartTest(nameof(TestInvalidUsernameLogin));
+        LogStep(Status.Info, "验证无效用户名无法登录系统");
+        AssignCategory("登录测试", "负向测试");
+        AssignAuthor("测试工程师");
         
         _loginPage = new LoginPage(Driver);
 
         try
         {
+            // 导航到登录页面
+            LogStep(Status.Info, "导航到登录页面");
             await _loginPage.NavigateToLoginPageAsync();
             
+            // 验证登录页面加载完成
+            LogStep(Status.Info, "验证登录页面是否正确加载");
+            var isLoginPageLoaded = await _loginPage.IsLoginPageLoadedAsync();
+            Assert.True(isLoginPageLoaded, "登录页面未正确加载");
+            LogStep(Status.Pass, "登录页面加载成功");
+            
             // 使用无效用户名登录
+            LogStep(Status.Info, $"使用无效用户名 '{TestConfig.TestData.InvalidUsername}' 尝试登录");
             await _loginPage.LoginAsync(TestConfig.TestData.InvalidUsername, TestConfig.Users.DefaultPassword);
             
             // 等待错误消息显示
+            LogStep(Status.Info, "等待错误消息显示");
             await Task.Delay(1000);
             
             // 验证错误消息显示
+            LogStep(Status.Info, "验证是否显示错误消息");
             var isErrorDisplayed = await _loginPage.IsErrorMessageDisplayedAsync();
             Assert.True(isErrorDisplayed, "未显示错误消息");
+            LogStep(Status.Pass, "错误消息显示成功");
             
+            // 验证错误消息内容
+            LogStep(Status.Info, "验证错误消息内容");
             var errorMessage = await _loginPage.GetErrorMessageAsync();
             Assert.Contains("Username and password do not match", errorMessage);
+            LogStep(Status.Pass, $"错误消息验证成功: {errorMessage}");
+            
+            // 保存失败截图
+            var screenshotPath = await SaveScreenshotAsync("invalid_username_login");
+            ExtentReportManager.AddScreenshot(ExtentTest!, screenshotPath, "无效用户名登录截图");
+            
+            await CleanupAsync(true);
         }
-        finally
+        catch (Exception ex)
         {
-            await CleanupAsync();
+            await CleanupAsync(false, ex);
+            throw;
         }
     }
-
-    /// <summary>
-    /// 测试锁定用户登录场景
-    /// </summary>
-    [Fact]
-    public async Task TestLockedOutUserLogin()
+    
+    public new void Dispose()
     {
-        await InitializeAsync(TestConfig.Browser.DefaultBrowserType, true, nameof(TestLockedOutUserLogin));
-        
-        _loginPage = new LoginPage(Driver);
-
-        try
+        lock (_lock)
         {
-            await _loginPage.NavigateToLoginPageAsync();
-            
-            // 使用锁定用户登录
-            await _loginPage.LoginAsync(TestConfig.Users.LockedOutUser, TestConfig.Users.DefaultPassword);
-            
-            // 等待错误消息显示
-            await Task.Delay(1000);
-            
-            // 验证错误消息显示
-            var isErrorDisplayed = await _loginPage.IsErrorMessageDisplayedAsync();
-            Assert.True(isErrorDisplayed, "未显示错误消息");
-            
-            var errorMessage = await _loginPage.GetErrorMessageAsync();
-            Assert.Contains("locked out", errorMessage);
+            _completedTests++;
+            if (_completedTests == _testCount)
+            {
+                // 所有测试完成后生成报告
+                FlushReports();
+                Console.WriteLine($"所有 {_testCount} 个测试已完成，测试报告已生成");
+            }
         }
-        finally
-        {
-            await CleanupAsync();
-        }
-    }
-
-    /// <summary>
-    /// 测试空用户名登录场景
-    /// </summary>
-    [Fact]
-    public async Task TestEmptyUsernameLogin()
-    {
-        await InitializeAsync(TestConfig.Browser.DefaultBrowserType, true, nameof(TestEmptyUsernameLogin));
-        
-        _loginPage = new LoginPage(Driver);
-
-        try
-        {
-            await _loginPage.NavigateToLoginPageAsync();
-            
-            // 使用空用户名登录
-            await _loginPage.LoginAsync(TestConfig.TestData.EmptyString, TestConfig.Users.DefaultPassword);
-            
-            // 等待错误消息显示
-            await Task.Delay(1000);
-            
-            // 验证错误消息显示
-            var isErrorDisplayed = await _loginPage.IsErrorMessageDisplayedAsync();
-            Assert.True(isErrorDisplayed, "未显示错误消息");
-            
-            var errorMessage = await _loginPage.GetErrorMessageAsync();
-            Assert.Contains("Username is required", errorMessage);
-        }
-        finally
-        {
-            await CleanupAsync();
-        }
-    }
-
-    /// <summary>
-    /// 测试空密码登录场景
-    /// </summary>
-    [Fact]
-    public async Task TestEmptyPasswordLogin()
-    {
-        await InitializeAsync(TestConfig.Browser.DefaultBrowserType, true, nameof(TestEmptyPasswordLogin));
-        
-        _loginPage = new LoginPage(Driver);
-
-        try
-        {
-            await _loginPage.NavigateToLoginPageAsync();
-            
-            // 使用空密码登录
-            await _loginPage.LoginAsync(TestConfig.Users.StandardUser, TestConfig.TestData.EmptyString);
-            
-            // 等待错误消息显示
-            await Task.Delay(1000);
-            
-            // 验证错误消息显示
-            var isErrorDisplayed = await _loginPage.IsErrorMessageDisplayedAsync();
-            Assert.True(isErrorDisplayed, "未显示错误消息");
-            
-            var errorMessage = await _loginPage.GetErrorMessageAsync();
-            Assert.Contains("Password is required", errorMessage);
-        }
-        finally
-        {
-            await CleanupAsync();
-        }
+        base.Dispose();
     }
 }

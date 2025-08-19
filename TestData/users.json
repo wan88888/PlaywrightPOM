@@ -1,0 +1,71 @@
+{
+  "validUsers": [
+    {
+      "username": "standard_user",
+      "password": "secret_sauce",
+      "description": "标准用户，可以正常登录和购买",
+      "expectedResult": "success"
+    },
+    {
+      "username": "problem_user",
+      "password": "secret_sauce",
+      "description": "问题用户，图片显示异常",
+      "expectedResult": "success"
+    },
+    {
+      "username": "performance_glitch_user",
+      "password": "secret_sauce",
+      "description": "性能问题用户，加载缓慢",
+      "expectedResult": "success"
+    },
+    {
+      "username": "error_user",
+      "password": "secret_sauce",
+      "description": "错误用户，某些功能会出错",
+      "expectedResult": "success"
+    },
+    {
+      "username": "visual_user",
+      "password": "secret_sauce",
+      "description": "视觉用户，用于视觉测试",
+      "expectedResult": "success"
+    }
+  ],
+  "invalidUsers": [
+    {
+      "username": "locked_out_user",
+      "password": "secret_sauce",
+      "description": "被锁定的用户",
+      "expectedResult": "locked_out",
+      "expectedMessage": "Epic sadface: Sorry, this user has been locked out."
+    },
+    {
+      "username": "invalid_user",
+      "password": "secret_sauce",
+      "description": "无效用户名",
+      "expectedResult": "invalid_credentials",
+      "expectedMessage": "Epic sadface: Username and password do not match any user in this service"
+    },
+    {
+      "username": "standard_user",
+      "password": "wrong_password",
+      "description": "错误密码",
+      "expectedResult": "invalid_credentials",
+      "expectedMessage": "Epic sadface: Username and password do not match any user in this service"
+    },
+    {
+      "username": "",
+      "password": "secret_sauce",
+      "description": "空用户名",
+      "expectedResult": "empty_username",
+      "expectedMessage": "Epic sadface: Username is required"
+    },
+    {
+      "username": "standard_user",
+      "password": "",
+      "description": "空密码",
+      "expectedResult": "empty_password",
+      "expectedMessage": "Epic sadface: Password is required"
+    }
+  ]
+}

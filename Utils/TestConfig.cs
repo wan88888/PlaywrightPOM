@@ -1,67 +1,100 @@
 namespace PlaywrightPOM.Utils;
 
+/// <summary>
+/// 测试配置类，使用配置管理器获取配置
+/// </summary>
 public static class TestConfig
 {
-    // 浏览器配置
+    private static BrowserConfig? _browserConfig;
+    private static UrlConfig? _urlConfig;
+    private static UserConfig? _userConfig;
+    private static TimeoutConfig? _timeoutConfig;
+    private static PathConfig? _pathConfig;
+
+    /// <summary>
+    /// 浏览器配置
+    /// </summary>
     public static class Browser
     {
-        public const string DefaultBrowserType = "chromium";
-        public const bool DefaultHeadless = true;
-        public const int DefaultTimeout = 30000;
-        public const int DefaultViewportWidth = 1920;
-        public const int DefaultViewportHeight = 1080;
+        private static BrowserConfig Config => _browserConfig ??= AppConfigurationManager.GetBrowserConfig();
+        
+        public static string DefaultBrowserType => Config.DefaultType;
+        public static bool DefaultHeadless => Config.Headless;
+        public static int DefaultTimeout => Config.Timeout;
+        public static int DefaultViewportWidth => Config.ViewportWidth;
+        public static int DefaultViewportHeight => Config.ViewportHeight;
     }
 
-    // 测试URL配置
+    /// <summary>
+    /// URL配置
+    /// </summary>
     public static class Urls
     {
-        public const string SauceDemo = "https://www.saucedemo.com";
-        public const string SauceDemoInventory = "https://www.saucedemo.com/inventory.html";
+        private static UrlConfig Config => _urlConfig ??= AppConfigurationManager.GetUrlConfig();
+        
+        public static string SauceDemo => Config.SauceDemo;
+        public static string SauceDemoInventory => Config.SauceDemoInventory;
     }
 
-    // 测试用户配置
+    /// <summary>
+    /// 用户配置
+    /// </summary>
     public static class Users
     {
-        public const string StandardUser = "standard_user";
-        public const string LockedOutUser = "locked_out_user";
-        public const string ProblemUser = "problem_user";
-        public const string PerformanceGlitchUser = "performance_glitch_user";
-        public const string ErrorUser = "error_user";
-        public const string VisualUser = "visual_user";
-        public const string DefaultPassword = "secret_sauce";
+        private static UserConfig Config => _userConfig ??= AppConfigurationManager.GetUserConfig();
+        
+        public static string StandardUser => Config.StandardUser;
+        public static string LockedOutUser => Config.LockedOutUser;
+        public static string ProblemUser => Config.ProblemUser;
+        public static string PerformanceGlitchUser => Config.PerformanceGlitchUser;
+        public static string ErrorUser => Config.ErrorUser;
+        public static string VisualUser => Config.VisualUser;
+        public static string DefaultPassword => Config.DefaultPassword;
     }
 
-    // 错误消息配置
+    /// <summary>
+    /// 错误消息配置
+    /// </summary>
     public static class ErrorMessages
     {
-        public const string LockedOutUserMessage = "Epic sadface: Sorry, this user has been locked out.";
-        public const string InvalidCredentialsMessage = "Epic sadface: Username and password do not match any user in this service";
-        public const string EmptyUsernameMessage = "Epic sadface: Username is required";
-        public const string EmptyPasswordMessage = "Epic sadface: Password is required";
+        public static string LockedOutUserMessage => AppConfigurationManager.Configuration["ErrorMessages:LockedOutUser"] ?? "Epic sadface: Sorry, this user has been locked out.";
+        public static string InvalidCredentialsMessage => AppConfigurationManager.Configuration["ErrorMessages:InvalidCredentials"] ?? "Epic sadface: Username and password do not match any user in this service";
+        public static string EmptyUsernameMessage => AppConfigurationManager.Configuration["ErrorMessages:EmptyUsername"] ?? "Epic sadface: Username is required";
+        public static string EmptyPasswordMessage => AppConfigurationManager.Configuration["ErrorMessages:EmptyPassword"] ?? "Epic sadface: Password is required";
     }
 
-    // 测试数据配置
+    /// <summary>
+    /// 测试数据配置
+    /// </summary>
     public static class TestData
     {
-        public const string InvalidUsername = "invalid_user";
-        public const string InvalidPassword = "invalid_password";
-        public const string EmptyString = "";
+        public static string InvalidUsername => AppConfigurationManager.Configuration["TestData:InvalidUsername"] ?? "invalid_user";
+        public static string InvalidPassword => AppConfigurationManager.Configuration["TestData:InvalidPassword"] ?? "invalid_password";
+        public static string EmptyString => AppConfigurationManager.Configuration["TestData:EmptyString"] ?? "";
     }
 
-    // 等待时间配置
+    /// <summary>
+    /// 超时配置
+    /// </summary>
     public static class Timeouts
     {
-        public const int ShortWait = 5000;
-        public const int MediumWait = 10000;
-        public const int LongWait = 30000;
-        public const int ElementWait = 15000;
+        private static TimeoutConfig Config => _timeoutConfig ??= AppConfigurationManager.GetTimeoutConfig();
+        
+        public static int ShortWait => Config.ShortWait;
+        public static int MediumWait => Config.MediumWait;
+        public static int LongWait => Config.LongWait;
+        public static int ElementWait => Config.ElementWait;
     }
 
-    // 文件路径配置
+    /// <summary>
+    /// 路径配置
+    /// </summary>
     public static class Paths
     {
-        public const string Screenshots = "Screenshots";
-        public const string TestData = "TestData";
-        public const string Reports = "Reports";
+        private static PathConfig Config => _pathConfig ??= AppConfigurationManager.GetPathConfig();
+        
+        public static string Screenshots => Config.Screenshots;
+        public static string TestData => Config.TestData;
+        public static string Reports => Config.Reports;
     }
 }

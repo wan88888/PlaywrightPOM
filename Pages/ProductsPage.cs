@@ -14,7 +14,7 @@ public class ProductsPage : BasePage
 
     // 预期的页面标题
     public const string ExpectedTitle = "Products";
-    public const string ProductsUrl = "https://www.saucedemo.com/inventory.html";
+    public static string ProductsUrl => AppConfigurationManager.GetUrlConfig().SauceDemoInventory;
 
     public ProductsPage(IPlaywrightDriver driver) : base(driver)
     {

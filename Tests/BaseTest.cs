@@ -9,7 +9,12 @@ public abstract class BaseTest : IDisposable
     protected IPlaywrightDriver Driver { get; private set; } = null!;
     protected string TestName { get; private set; } = string.Empty;
     protected ExtentTest? ExtentTest { get; private set; }
-    private bool _disposed = false;
+
+    protected BaseTest()
+    {
+        // 初始化配置管理器
+        AppConfigurationManager.Initialize();
+    }
 
     /// <summary>
     /// 测试初始化
@@ -167,8 +172,5 @@ public abstract class BaseTest : IDisposable
     public virtual void Dispose()
     {
         CleanupAsync().GetAwaiter().GetResult();
-        
-        // 在最后一个测试完成后刷新报告
-        FlushReports();
     }
 }
